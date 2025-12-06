@@ -11,16 +11,20 @@
 #include "square.h"
 
 int main() {
-    srand(time(NULL)); //инициализация генератора случайных чисел
-
-    setlocale(LC_ALL, ""); // UTF-8(русский текст)
+    srand(time(NULL));
+    setlocale(LC_ALL, "");
     XSetLocaleModifiers("");
+
+    Display* display = XOpenDisplay(NULL);
+    if (!display) {
+        std::cerr << "Не удалось открыть X11 display\n";
+        return 1;
+    }
 
     int screen = DefaultScreen(display);
     int win_width = 600;
     int win_height = 400;
 
-    //создание окна
     Window window = XCreateSimpleWindow(
         display, RootWindow(display, screen),
         100, 100, win_width, win_height,
@@ -32,7 +36,6 @@ int main() {
 
     GC gc = XCreateGC(display, window, 0, NULL);
 
-    //создание шрифта UTF-8
     char **missing;
     int missing_count;
     char *defstr;
@@ -44,7 +47,6 @@ int main() {
         return 1;
     }
 
-    //создаем кнопки
     Button btn_drop   = {10, 10, 200, 30, "Бросить две точки"};
     Button btn_square = {220, 10, 200, 30, "Дорисовать квадрат"};
 
@@ -65,13 +67,13 @@ int main() {
             int my = e.xbutton.y;
 
             if (inside_button(btn_drop, mx, my)) {
-                drop_points(); //генерация новых точек
+                drop_points();
                 draw_square_enabled = false;
                 XClearWindow(display, window);
             }
 
             if (inside_button(btn_square, mx, my)) {
-                draw_square_enabled = true; //включаем рисование квадрата
+                draw_square_enabled = true;
                 XClearWindow(display, window);
             }
 

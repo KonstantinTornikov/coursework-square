@@ -4,32 +4,36 @@
 
 bool draw_square_enabled = false;
 
-//рисует квадрат, используя точки A и B
 void draw_square(Display* display, Window window, GC gc) {
     if (!points_exist) return;
 
-    int dx = xB - xA;
-    int dy = yB - yA;
+    // Диагональные точки квадрата
+    double x1 = xA, y1 = yA;
+    double x3 = xB, y3 = yB;
 
-    double length = sqrt(dx*dx + dy*dy); //вычисляем длину квадрата
+    // Центр диагонали
+    double cx = (x1 + x3) / 2.0;
+    double cy = (y1 + y3) / 2.0;
 
-    //вектор перпендикулярный AB
-    int vx = -dy;
-    int vy = dx;
+    // Вектор половины диагонали
+    double hx = (x3 - x1) / 2.0;
+    double hy = (y3 - y1) / 2.0;
 
-    //нормализация вектора
-    double norm = sqrt(vx*vx + vy*vy);
-    vx = (int)((vx / norm) * length);
-    vy = (int)((vy / norm) * length);
+    // Поворот вектора половины диагонали на 90°
+    double px = -hy;
+    double py = hx;
 
-    int xC = xB + vx;
-    int yC = yB + vy;
-    int xD = xA + vx;
-    int yD = yA + vy;
+    // Вершины квадрата
+    double x2 = cx + px;
+    double y2 = cy + py;
 
-    //рисуем линии квадраат
-    XDrawLine(display, window, gc, xA, yA, xB, yB);
-    XDrawLine(display, window, gc, xB, yB, xC, yC);
-    XDrawLine(display, window, gc, xC, yC, xD, yD);
-    XDrawLine(display, window, gc, xD, yD, xA, yA);
+    double x4 = cx - px;
+    double y4 = cy - py;
+
+    // Рисуем квадрат
+    XDrawLine(display, window, gc, x1, y1, x2, y2);
+    XDrawLine(display, window, gc, x2, y2, x3, y3);
+    XDrawLine(display, window, gc, x3, y3, x4, y4);
+    XDrawLine(display, window, gc, x4, y4, x1, y1);
 }
+

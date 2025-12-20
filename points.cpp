@@ -21,7 +21,18 @@ void drop_points() {
 void draw_points(Display* display, Window window, GC gc) {
     if (!points_exist) return;
 
+    // Сохраняем текущий цвет графического контекста
+    XGCValues old_values;
+    XGetGCValues(display, gc, GCForeground, &old_values);
+
+    // Устанавливаем красный цвет
+    XSetForeground(display, gc, 0xFF0000); // красный
+
+    // Рисуем точки
     XFillArc(display, window, gc, xA - 3, yA - 3, 6, 6, 0, 360 * 64);
     XFillArc(display, window, gc, xB - 3, yB - 3, 6, 6, 0, 360 * 64);
+
+    // Восстанавливаем старый цвет
+    XSetForeground(display, gc, old_values.foreground);
 }
 

@@ -1,39 +1,47 @@
 #include "square.h"
 #include "points.h"
 #include <cmath>
+#include <X11/Xlib.h>
 
 bool draw_square_enabled = false;
 
 void draw_square(Display* display, Window window, GC gc) {
     if (!points_exist) return;
 
-    // Диагональные точки квадрата
+    // Сохраняем текущий цвет
+    XGCValues old_gc_values;
+    XGetGCValues(display, gc, GCForeground, &old_gc_values);
+    unsigned long old_color = old_gc_values.foreground;
+
+    // Устанавливаем красный цвет
+    Colormap colormap = DefaultColormap(display, DefaultScreen(display));
+    XColor red, exact;
+    XAllocNamedColor(display, colormap, "red", &red, &exact);
+    XSetForeground(display, gc, red.pixel);
+
+    // Диагональные точки
     double x1 = xA, y1 = yA;
     double x3 = xB, y3 = yB;
 
-    // Центр диагонали
     double cx = (x1 + x3) / 2.0;
     double cy = (y1 + y3) / 2.0;
 
-    // Вектор половины диагонали
     double hx = (x3 - x1) / 2.0;
     double hy = (y3 - y1) / 2.0;
 
-    // Поворот вектора половины диагонали на 90°
     double px = -hy;
     double py = hx;
 
-    // Вершины квадрата
     double x2 = cx + px;
     double y2 = cy + py;
-
     double x4 = cx - px;
     double y4 = cy - py;
 
-    // Рисуем квадрат
     XDrawLine(display, window, gc, x1, y1, x2, y2);
     XDrawLine(display, window, gc, x2, y2, x3, y3);
     XDrawLine(display, window, gc, x3, y3, x4, y4);
     XDrawLine(display, window, gc, x4, y4, x1, y1);
-}
 
+    // ВОССТАНАВЛИВАЕМ старый цвет
+    XSetForeground(display, gc, old_color);
+}

@@ -37,11 +37,29 @@ void draw_square(Display* display, Window window, GC gc) {
     double x4 = cx - px;
     double y4 = cy - py;
 
+    // Заливка
+    XPoint points[4];
+    points[0] = { (short)x1, (short)y1 };
+    points[1] = { (short)x2, (short)y2 };
+    points[2] = { (short)x3, (short)y3 };
+    points[3] = { (short)x4, (short)y4 };
+
+    XFillPolygon(
+        display,
+        window,
+        gc,
+        points,
+        4,
+        Convex,
+        CoordModeOrigin
+    );
+
+    // Контур
     XDrawLine(display, window, gc, x1, y1, x2, y2);
     XDrawLine(display, window, gc, x2, y2, x3, y3);
     XDrawLine(display, window, gc, x3, y3, x4, y4);
     XDrawLine(display, window, gc, x4, y4, x1, y1);
 
-    // ВОССТАНАВЛИВАЕМ старый цвет
+    // Восстанавливаем старый цвет
     XSetForeground(display, gc, old_color);
 }
